@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  int _count = 0;
 
   @override
   void initState() {
@@ -52,7 +53,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _onLocationEvent(dynamic event) {
-    print(event);
+    var data = Map<String, dynamic>.from(event);
+    setState(() {
+      _count = data["satellite_count"] ?? 0;
+    });
   }
 
   void _onLocationError(dynamic error) {
@@ -67,7 +71,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Text('Running on: $_platformVersion\n GPS: $_count\n'),
         ),
       ),
     );

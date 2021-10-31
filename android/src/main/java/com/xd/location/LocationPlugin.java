@@ -17,10 +17,11 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.EventChannel;
 
 import android.location.LocationManager;
-import 	android.location.Location;
+import android.location.Location;
 import android.location.GnssMeasurementsEvent;
 import android.location.GnssClock;
 import android.location.GnssMeasurement;
+import android.location.GnssStatus;
 import android.content.Context;
 import android.app.Activity;
 import android.util.Log;
@@ -60,25 +61,49 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     }
   };
 
+  private GnssStatus gnssStatus; // GnssStatus数据
+
+  private GnssStatus.Callback gnssStatusCallback = new GnssStatus.Callback() {
+    @Override
+    public void onSatelliteStatusChanged(GnssStatus status) {
+      LocationPlugin.this.gnssStatus = status;
+    }
+  };
+
   public void onGnssMeasurementsReceived(GnssMeasurementsEvent event) {
     Map<String, Object> data = new HashMap<String, Object>();
     GnssClock gnssClock = event.getClock();
     data.put("rx_clock", formatClock(gnssClock));
 
     Location loc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-    if (loc == null) {
-      loc = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+    if (loc != null) {
+      data.put("accuracy", loc.getAccuracy());
+      data.put("log", loc.getLongitude());
+      data.put("lat", loc.getLatitude());
+      data.put("speed", loc.getSpeed());
+      data.put("speed_accuracy", loc.getSpeedAccuracyMetersPerSecond());
     }
 
-    data.put("accuracy", loc.getAccuracy());
-    data.put("log", loc.getLongitude());
-    data.put("lat", loc.getLatitude());
-    data.put("speed", loc.getSpeed());
-    data.put("speed_accuracy", loc.getSpeedAccuracyMetersPerSecond());
+    data.put("satellite_count", 0);
+    if (gnssStatus != null) {
+      data.put("satellite_count", gnssStatus.getSatelliteCount());
 
-    List<Map<String, Object>> satelliteData = new ArrayList<Map<String, Object>>();
-    for (GnssMeasurement measurement : event.getMeasurements()) { // 遍历所有的卫星数据
-      GnssData gnssdata = new GnssData(measurement, gnssClock);
+      List<Map<String, Object>> satelliteData = new ArrayList<Map<String, Object>>();
+      for (GnssMeasurement measurement : event.getMeasurements()) { // 遍历所有的卫星数据
+        GnssData gnssdata = new GnssData(measurement, gnssClock, gnssStatus);
+        Map<String, Object> temp = new HashMap<String, Object>();
+        temp.put("svid", gnssdata.getPRN());
+        temp.put("ttx", gnssdata.getTTx());
+        temp.put("azimuth_degrees", gnssdata.getAzimuthDegrees());
+        temp.put("elevation_degrees", gnssdata.getElevationDegrees());
+        temp.put("cn0_db", gnssdata.getCn0DbHz());
+        temp.put("carrier_frequency", gnssdata.getCarrierFrequencyHz());
+        temp.put("base_cn0_db", gnssdata.getBasebandCn0DbHz());
+
+        satelliteData.add(temp);
+      }
+
+      data.put("satellites", satelliteData);
     }
 
     uiThreadHandler.post(() -> eventSink.success(data));
@@ -163,11 +188,6 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     if (call.method.equals("getPlatformVersion")) {
       result.success("Android " + android.os.Build.VERSION.RELEASE);
     } else if (call.method.equals("getEventMessage")) {
-      Map<String, Object> event = new HashMap<String, Object>();
-      event.put("username", "admin");
-      event.put("age", 11);
-      eventSink.success(event);
-
       result.success("Message: send ok!");
     } else if (call.method.equals("open")) {
       openLocationListen();
@@ -182,7 +202,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
 
   // 开启定位数据监测
   public void openLocationListen() {
-    mLocationManager.registerGnssMeasurementsCallback(gnssMeasurementEventListener);
+    mLocationManager.registerGnssMeasurementsCallback(gnssMeasurementEventListener, null);
+    mLocationManager.registerGnssStatusCallback(gnssStatusCallback);
   }
 
   // 关闭定位数据监测
