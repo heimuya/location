@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -22,6 +23,7 @@ import android.location.GnssMeasurementsEvent;
 import android.location.GnssClock;
 import android.location.GnssMeasurement;
 import android.location.GnssStatus;
+import android.location.GnssNavigationMessage;
 import android.content.Context;
 import android.app.Activity;
 import android.util.Log;
@@ -44,12 +46,21 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
   /// when the Flutter Engine is detached from the Activity
   private MethodChannel mChannel;
 
+  private Map<String, String> navigationData = new HashMap<String, String>();
+
   private EventChannel eChannel;
   private EventChannel.EventSink eventSink;
 
   private LocationManager mLocationManager;
 
   private GnssLocationListener locationListener = new GnssLocationListener();
+
+  private GnssNavigationMessage.Callback gnssNavigationCallback = new GnssNavigationMessage.Callback() {
+    @Override
+    public void onGnssNavigationMessageReceived(GnssNavigationMessage event) {
+      LocationPlugin.this.onGnssNavigationMessageReceived(event);
+    }
+  };
 
   private GnssMeasurementsEvent.Callback gnssMeasurementEventListener = new GnssMeasurementsEvent.Callback() {
     @Override
@@ -82,6 +93,37 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     }
   };
 
+  public void onGnssNavigationMessageReceived(GnssNavigationMessage event) {
+    if (event.getStatus() != GnssNavigationMessage.STATUS_UNKNOWN) {
+      navigationData.put(getNavigationMessageType(event.getType(), event.getSvid()), new String(event.getData()));
+    }
+  }
+
+
+  public String getNavigationMessageType(int stype, int svid) {
+    Locale locale = Locale.getDefault();
+    switch (stype) {
+      case GnssNavigationMessage.TYPE_GPS_L1CA:
+      case GnssNavigationMessage.TYPE_GPS_L2CNAV:
+      case GnssNavigationMessage.TYPE_GPS_L5CNAV:
+      case GnssNavigationMessage.TYPE_GPS_CNAV2:
+        return "G#" + String.format(locale, "%02d", svid);
+      case GnssNavigationMessage.TYPE_GLO_L1CA:
+        return "R#" + String.format(locale, "%02d", svid);
+      case GnssNavigationMessage.TYPE_BDS_D1:
+      case GnssNavigationMessage.TYPE_BDS_D2:
+      case GnssNavigationMessage.TYPE_BDS_CNAV1:
+        return "C#" + String.format(locale, "%02d", svid);
+      case GnssNavigationMessage.TYPE_GAL_I:
+      case GnssNavigationMessage.TYPE_GAL_F:
+        return "E#" + String.format(locale, "%02d", svid);
+      case GnssNavigationMessage.TYPE_QZS_L1CA:
+        return "J#" + String.format(locale, "%02d", svid);
+      default:
+        return "U#" + String.format(locale, "%02d", svid);
+    }
+  }
+
   public void onGnssMeasurementsReceived(GnssMeasurementsEvent event) {
     Map<String, Object> data = new HashMap<String, Object>();
     GnssClock gnssClock = event.getClock();
@@ -111,6 +153,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
         temp.put("cn0_db", gnssdata.getCn0DbHz());
         // temp.put("carrier_frequency", gnssdata.getCarrierFrequencyHz());
         // temp.put("base_cn0_db", gnssdata.getBasebandCn0DbHz());
+        // temp.put("navigation", navigationData.get(gnssdata.getPRN()));
 
         satelliteData.add(temp);
       }
@@ -216,12 +259,16 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
   public void openLocationListen() {
     mLocationManager.registerGnssMeasurementsCallback(gnssMeasurementEventListener, null);
     mLocationManager.registerGnssStatusCallback(gnssStatusCallback, null);
+    mLocationManager.registerGnssNavigationMessageCallback(gnssNavigationCallback, null);
+
     mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
   }
 
   // 关闭定位数据监测
   public void closeLocationListen() {
     mLocationManager.unregisterGnssMeasurementsCallback(gnssMeasurementEventListener);
+    mLocationManager.unregisterGnssStatusCallback(gnssStatusCallback);
+    mLocationManager.unregisterGnssNavigationMessageCallback(gnssNavigationCallback);
   }
 
   @Override
