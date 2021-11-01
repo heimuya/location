@@ -132,8 +132,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     Location loc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     if (loc != null) {
       data.put("accuracy", loc.getAccuracy());
-      data.put("log", loc.getLongitude());
-      data.put("lat", loc.getLatitude());
+      data.put("longitude", loc.getLongitude());
+      data.put("latitude", loc.getLatitude());
       data.put("speed", loc.getSpeed());
       data.put("altitude", loc.getAltitude());
       data.put("speed_accuracy", loc.getSpeedAccuracyMetersPerSecond());
