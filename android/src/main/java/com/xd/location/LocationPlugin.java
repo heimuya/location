@@ -135,6 +135,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
       data.put("log", loc.getLongitude());
       data.put("lat", loc.getLatitude());
       data.put("speed", loc.getSpeed());
+      data.put("altitude", loc.getAltitude());
       data.put("speed_accuracy", loc.getSpeedAccuracyMetersPerSecond());
     }
 
