@@ -49,6 +49,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
 
   private LocationManager mLocationManager;
 
+  private GnssLocationListener locationListener = new GnssLocationListener();
+
   private GnssMeasurementsEvent.Callback gnssMeasurementEventListener = new GnssMeasurementsEvent.Callback() {
     @Override
     public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
@@ -67,6 +69,16 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     @Override
     public void onSatelliteStatusChanged(GnssStatus status) {
       LocationPlugin.this.gnssStatus = status;
+    }
+
+    @Override
+    public void onStarted() {
+      // Log.i("location", "gnss started");
+    }
+
+    @Override
+    public void onStopped() {
+      // Log.i("location", "gnss stopped");
     }
   };
 
@@ -203,7 +215,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
   // 开启定位数据监测
   public void openLocationListen() {
     mLocationManager.registerGnssMeasurementsCallback(gnssMeasurementEventListener, null);
-    mLocationManager.registerGnssStatusCallback(gnssStatusCallback);
+    mLocationManager.registerGnssStatusCallback(gnssStatusCallback, null);
+    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
   }
 
   // 关闭定位数据监测
