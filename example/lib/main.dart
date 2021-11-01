@@ -53,6 +53,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _onLocationEvent(dynamic event) {
+    print(event);
     var data = Map<String, dynamic>.from(event);
     setState(() {
       _count = data["satellite_count"] ?? 0;

@@ -78,7 +78,7 @@ public class GnssData {
   }
 
   public float getBasebandCn0DbHz() {
-    if (satelliteIndex >= 0) {
+    if (satelliteIndex >= 0 && status.hasBasebandCn0DbHz(satelliteIndex)) {
       return status.getBasebandCn0DbHz(satelliteIndex);
     }
 
@@ -86,7 +86,7 @@ public class GnssData {
   }
 
   public float getCarrierFrequencyHz() {
-    if (satelliteIndex >= 0) {
+    if (satelliteIndex >= 0 && status.hasCarrierFrequencyHz(satelliteIndex)) {
       return status.	getCarrierFrequencyHz(satelliteIndex);
     }
 
