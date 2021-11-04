@@ -149,6 +149,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
         Map<String, Object> temp = new HashMap<String, Object>();
         temp.put("svid", gnssdata.getPRN());
         temp.put("ttx", gnssdata.getTTx());
+        temp.put("trx", gnssdata.getTRx());
         temp.put("azimuth_degrees", gnssdata.getAzimuthDegrees());
         temp.put("elevation_degrees", gnssdata.getElevationDegrees());
         temp.put("cn0_db", gnssdata.getCn0DbHz());
