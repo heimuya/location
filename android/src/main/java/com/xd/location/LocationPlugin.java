@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -29,6 +31,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.os.Looper;
 import android.os.Handler;
+import android.os.Message;
 
 
 /** LocationPlugin */
@@ -45,6 +48,25 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private MethodChannel mChannel;
+
+  private Handler messageHandler = new Handler() {
+    @Override
+    public void handleMessage(Message msg) {
+      LocationPlugin.this.sendMessage();
+    }
+  };
+
+  private TimerTask task = new TimerTask() {
+    @Override
+    public void run() {
+      Message msg = new Message();
+      messageHandler.sendMessage(msg);
+    }
+  };
+
+  private Map<String, Object> gnssData = new HashMap<String, Object>();
+
+  private final Timer timer = new Timer(); 
 
   private Map<String, String> navigationData = new HashMap<String, String>();
 
@@ -98,7 +120,6 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
       navigationData.put(getNavigationMessageType(event.getType(), event.getSvid()), new String(event.getData()));
     }
   }
-
 
   public String getNavigationMessageType(int stype, int svid) {
     Locale locale = Locale.getDefault();
@@ -164,7 +185,11 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
       data.put("satellites", satelliteData);
     }
 
-    uiThreadHandler.post(() -> eventSink.success(data));
+    gnssData = data;
+  }
+
+  public void sendMessage() {
+    uiThreadHandler.post(() -> eventSink.success(gnssData));
   }
 
   public Map<String, Object> formatClock(GnssClock gnssClock) {
@@ -265,6 +290,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     mLocationManager.registerGnssNavigationMessageCallback(gnssNavigationCallback, null);
 
     mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
+
+    timer.schedule(task, 100, 100);
   }
 
   // 关闭定位数据监测
@@ -272,6 +299,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     mLocationManager.unregisterGnssMeasurementsCallback(gnssMeasurementEventListener);
     mLocationManager.unregisterGnssStatusCallback(gnssStatusCallback);
     mLocationManager.unregisterGnssNavigationMessageCallback(gnssNavigationCallback);
+    timer.cancel();
   }
 
   @Override
