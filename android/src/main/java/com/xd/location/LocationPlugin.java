@@ -174,6 +174,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
         temp.put("azimuth_degrees", gnssdata.getAzimuthDegrees());
         temp.put("elevation_degrees", gnssdata.getElevationDegrees());
         temp.put("cn0_db", gnssdata.getCn0DbHz());
+        temp.put("received_svtime_uncertainty_nanos", gnssdata.getReceivedSvTimeUncertaintyNanos());
         temp.put("pseudorange", gnssdata.getPseudorange());
         // temp.put("carrier_frequency", gnssdata.getCarrierFrequencyHz());
         // temp.put("base_cn0_db", gnssdata.getBasebandCn0DbHz());

@@ -87,7 +87,7 @@ public class GnssData {
 
   public float getCarrierFrequencyHz() {
     if (satelliteIndex >= 0 && status.hasCarrierFrequencyHz(satelliteIndex)) {
-      return status.	getCarrierFrequencyHz(satelliteIndex);
+      return status.getCarrierFrequencyHz(satelliteIndex);
     }
 
     return 0.0f;
@@ -126,6 +126,10 @@ public class GnssData {
     }
 
     return -1;
+  }
+
+  public Long getReceivedSvTimeUncertaintyNanos() {
+    return measurement.getReceivedSvTimeUncertaintyNanos();
   }
 
   private void calcPseudorange() {
