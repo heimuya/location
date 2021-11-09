@@ -133,7 +133,7 @@ public class GnssData {
     double TimeOffsetNanos = measurement.getTimeOffsetNanos();
     double FullBiasNanos = clock.hasFullBiasNanos() ? clock.getFullBiasNanos() : 0;
     double BiasNanos = clock.hasBiasNanos() ? clock.getBiasNanos() : 0;
-    double ReceivedSvTimeNanos = measurement.getReceivedSvTimeNanos();
+    double ReceivedSvTimeNanos = measurement.getReceivedSvTimeNanos() + measurement.getTimeOffsetNanos();
     double LeapSecond = clock.hasLeapSecond() ? clock.getLeapSecond() : 0;
 
     // Arrival Time
