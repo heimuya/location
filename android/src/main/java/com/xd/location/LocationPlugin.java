@@ -49,24 +49,24 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
   /// when the Flutter Engine is detached from the Activity
   private MethodChannel mChannel;
 
-  private Handler messageHandler = new Handler() {
-    @Override
-    public void handleMessage(Message msg) {
-      LocationPlugin.this.sendMessage();
-    }
-  };
+  // private Handler messageHandler = new Handler() {
+  //   @Override
+  //   public void handleMessage(Message msg) {
+  //     LocationPlugin.this.sendMessage();
+  //   }
+  // };
 
-  private TimerTask task = new TimerTask() {
-    @Override
-    public void run() {
-      Message msg = new Message();
-      messageHandler.sendMessage(msg);
-    }
-  };
+  // private TimerTask task = new TimerTask() {
+  //   @Override
+  //   public void run() {
+  //     Message msg = new Message();
+  //     messageHandler.sendMessage(msg);
+  //   }
+  // };
 
   private Map<String, Object> gnssData = new HashMap<String, Object>();
 
-  private final Timer timer = new Timer(); 
+  // private final Timer timer = new Timer(); 
 
   private Map<String, String> navigationData = new HashMap<String, String>();
 
@@ -201,6 +201,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     }
 
     gnssData = data;
+
+    LocationPlugin.this.sendMessage();
   }
 
   public void sendMessage() {
@@ -306,7 +308,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
 
     mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
 
-    timer.schedule(task, 100, 100);
+    // timer.schedule(task, 100, 100);
   }
 
   // 关闭定位数据监测
@@ -314,7 +316,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     mLocationManager.unregisterGnssMeasurementsCallback(gnssMeasurementEventListener);
     mLocationManager.unregisterGnssStatusCallback(gnssStatusCallback);
     mLocationManager.unregisterGnssNavigationMessageCallback(gnssNavigationCallback);
-    timer.cancel();
+    // timer.cancel();
   }
 
   @Override
