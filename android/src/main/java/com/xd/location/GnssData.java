@@ -132,6 +132,62 @@ public class GnssData {
     return measurement.getReceivedSvTimeUncertaintyNanos();
   }
 
+  public double getAccumulatedDeltaRangeMeters() {
+    return measurement.getAccumulatedDeltaRangeMeters();
+  }
+
+  public int getAccumulatedDeltaRangeState() {
+    return measurement.getAccumulatedDeltaRangeState();
+  }
+
+  public double getAccumulatedDeltaRangeUncertaintyMeters() {
+    return measurement.getAccumulatedDeltaRangeUncertaintyMeters();
+  }
+
+  public double getAutomaticGainControlLevelDb() {
+    return measurement.getAutomaticGainControlLevelDb();
+  }
+
+  public int getConstellationType() {
+    return measurement.getConstellationType();
+  }
+
+  public double getFullInterSignalBiasNanos() {
+    return measurement.getFullInterSignalBiasNanos();
+  }
+
+  public int getMultipathIndicator() {
+    return measurement.getMultipathIndicator();
+  }
+
+  public double getPseudorangeRateMetersPerSecond() {
+    return measurement.getPseudorangeRateMetersPerSecond();
+  }
+
+  public double getPseudorangeRateUncertaintyMetersPerSecond() {
+    return measurement.getPseudorangeRateUncertaintyMetersPerSecond();
+  }
+
+  public Long getReceivedSvTimeNanos() {
+    return measurement.getReceivedSvTimeNanos();
+  }
+
+  public double getSatelliteInterSignalBiasNanos() {
+    return measurement.getSatelliteInterSignalBiasNanos();
+  }
+
+  public double getSnrInDb() {
+    return measurement.getSnrInDb();
+  }
+
+  public int getSvid() {
+    return measurement.getSvid();
+  }
+
+  public double getTimeOffsetNanos() {
+    return measurement.getTimeOffsetNanos();
+  }
+
   private void calcPseudorange() {
     double TimeNanos = clock.getTimeNanos();
     double TimeOffsetNanos = measurement.getTimeOffsetNanos();
