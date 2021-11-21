@@ -85,12 +85,8 @@ public class GnssData {
     return 0.0f;
   }
 
-  public float getCarrierFrequencyHz() {
-    if (satelliteIndex >= 0 && status.hasCarrierFrequencyHz(satelliteIndex)) {
-      return status.getCarrierFrequencyHz(satelliteIndex);
-    }
-
-    return 0.0f;
+  public double getCarrierFrequencyHz() {
+    return carrierFrequencyHZ;
   }
 
   // 获取cn0db，以 MHz 为单位

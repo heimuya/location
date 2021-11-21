@@ -177,20 +177,20 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
         temp.put("received_svtime_uncertainty_nanos", gnssdata.getReceivedSvTimeUncertaintyNanos());
         temp.put("pseudorange", gnssdata.getPseudorange());
         temp.put("time_offset_nanos", gnssdata.getTimeOffsetNanos());
-        temp.put("snr_in_db", gnssdata.getSnrInDb());
-        temp.put("satellite_inter_signal_bias_nanos", gnssdata.getSatelliteInterSignalBiasNanos());
+        // temp.put("snr_in_db", gnssdata.getSnrInDb());
+        // temp.put("satellite_inter_signal_bias_nanos", gnssdata.getSatelliteInterSignalBiasNanos());
         temp.put("received_sv_time_uncertainty_nanos", gnssdata.getReceivedSvTimeUncertaintyNanos());
         temp.put("received_sv_time_nanos", gnssdata.getReceivedSvTimeNanos());
         temp.put("pseudorange_rate_uncertainty_meters_per_second", gnssdata.getPseudorangeRateUncertaintyMetersPerSecond());
         temp.put("pseudorange_rate_meters_per_second", gnssdata.getPseudorangeRateMetersPerSecond());
         temp.put("multipath_indicator", gnssdata.getMultipathIndicator());
-        temp.put("full_inter_signal_bias_nanos", gnssdata.getFullInterSignalBiasNanos());
+        // temp.put("full_inter_signal_bias_nanos", gnssdata.getFullInterSignalBiasNanos());
         temp.put("constellation_type", gnssdata.getConstellationType());
         temp.put("automatic_gain_control_levelDb", gnssdata.getAutomaticGainControlLevelDb());
         temp.put("acumulated_delta_range_uncertainty_meters", gnssdata.getAccumulatedDeltaRangeUncertaintyMeters());
         temp.put("accumulated_delta_range_state", gnssdata.getAccumulatedDeltaRangeState());
         temp.put("accumulated_delta_range_meters", gnssdata.getAccumulatedDeltaRangeMeters());
-        // temp.put("carrier_frequency", gnssdata.getCarrierFrequencyHz());
+        temp.put("carrier_frequency", gnssdata.getCarrierFrequencyHz());
         // temp.put("base_cn0_db", gnssdata.getBasebandCn0DbHz());
         // temp.put("navigation", navigationData.get(gnssdata.getPRN()));
 
