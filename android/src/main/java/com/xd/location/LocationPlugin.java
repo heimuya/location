@@ -77,6 +77,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
 
   private GnssLocationListener locationListener = new GnssLocationListener();
 
+  private SensorHandler sensorHandler;
+
   private GnssNavigationMessage.Callback gnssNavigationCallback = new GnssNavigationMessage.Callback() {
     @Override
     public void onGnssNavigationMessageReceived(GnssNavigationMessage event) {
@@ -206,6 +208,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
   }
 
   public void sendMessage() {
+    gnssData.put("sensor", sensorHandler.getSensorData());
     uiThreadHandler.post(() -> eventSink.success(gnssData));
   }
 
@@ -266,6 +269,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
   public void onAttachedToActivity(@NonNull final ActivityPluginBinding binding) {
     mActivity = binding.getActivity();
     mLocationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+
+    sensorHandler = new SensorHandler(mActivity);
   }
 
   @Override
@@ -308,6 +313,7 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
 
     mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
 
+    sensorHandler.start();
     // timer.schedule(task, 100, 100);
   }
 
@@ -317,6 +323,8 @@ public class LocationPlugin implements FlutterPlugin, ActivityAware, MethodCallH
     mLocationManager.unregisterGnssStatusCallback(gnssStatusCallback);
     mLocationManager.unregisterGnssNavigationMessageCallback(gnssNavigationCallback);
     // timer.cancel();
+
+    sensorHandler.stop();
   }
 
   @Override

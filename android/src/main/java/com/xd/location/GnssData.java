@@ -26,7 +26,7 @@ public class GnssData {
 
   private double pseudorange;
 
-// 构造函数，传入 GnssClock 和 GnssMeasurement 对象
+  // 构造函数，传入 GnssClock 和 GnssMeasurement 对象
   public GnssData(GnssMeasurement measurement, GnssClock clock, GnssStatus status) {
     this.measurement = measurement;
     this.status = status;
