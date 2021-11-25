@@ -119,7 +119,7 @@ public class SensorHandler {
     lastY = y;
     lastZ = z;
 
-    double speedTemp = Math.sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ)/timeInterval * 10000;
+    speed = Math.sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ)/timeInterval * 10000;
     speedH = Math.sqrt(deltaX*deltaX + deltaY*deltaY)/timeInterval * 10000; // 待优化，根据手机横屏竖屏判断
     speedV = Math.sqrt(deltaX*deltaX + deltaY*deltaY)/timeInterval * 10000; // 待优化，根据手机横屏竖屏判断
   }
